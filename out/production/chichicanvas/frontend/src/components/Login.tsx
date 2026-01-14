@@ -33,14 +33,6 @@ function Login() {
                 >
                     로그인
                 </button>
-
-                {/* 회원가입 버튼 */}
-                <button
-                    style={styles.subButton}
-                    onClick={() => navigate("/signup")}
-                >
-                    회원가입
-                </button>
             </div>
         </div>
     );
@@ -90,15 +82,7 @@ const styles = {
         fontWeight: "bold" as const,
         cursor: "pointer",
     },
-    subButton: {
-        padding: "10px",
-        borderRadius: "8px",
-        border: "1px solid #6c5ce7",
-        background: "#fff",
-        color: "#6c5ce7",
-        fontWeight: "bold" as const,
-        cursor: "pointer",
-    },
 };
+
 
 export default Login;

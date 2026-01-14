@@ -1,16 +1,19 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-function Login() {
+function Signup() {
     const navigate = useNavigate();
+
     const [id, setId] = useState("");
+    const [nickname, setNickname] = useState("");
     const [pw, setPw] = useState("");
+    const [pwConfirm, setPwConfirm] = useState("");
 
     return (
         <div style={styles.bg}>
             <div style={styles.card}>
                 <h1 style={styles.logo}>🎨 Chichi Canvas</h1>
-                <p style={styles.subtitle}>그림으로 대화하세요</p>
+                <p style={styles.subtitle}>회원가입</p>
 
                 <input
                     style={styles.input}
@@ -21,25 +24,39 @@ function Login() {
 
                 <input
                     style={styles.input}
+                    placeholder="닉네임"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                />
+
+                <input
+                    style={styles.input}
                     type="password"
                     placeholder="비밀번호"
                     value={pw}
                     onChange={(e) => setPw(e.target.value)}
                 />
 
+                <input
+                    style={styles.input}
+                    type="password"
+                    placeholder="비밀번호 확인"
+                    value={pwConfirm}
+                    onChange={(e) => setPwConfirm(e.target.value)}
+                />
+
                 <button
                     style={styles.button}
-                    onClick={() => navigate("/rooms")}
-                >
-                    로그인
-                </button>
-
-                {/* 회원가입 버튼 */}
-                <button
-                    style={styles.subButton}
-                    onClick={() => navigate("/signup")}
+                    onClick={() => navigate("/")}
                 >
                     회원가입
+                </button>
+
+                <button
+                    style={styles.subButton}
+                    onClick={() => navigate("/")}
+                >
+                    로그인으로 돌아가기
                 </button>
             </div>
         </div>
@@ -101,4 +118,4 @@ const styles = {
     },
 };
 
-export default Login;
+export default Signup;
