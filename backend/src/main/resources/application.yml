@@ -1,0 +1,48 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: chilink-backend
+
+  profiles:
+    active: local
+
+  jpa:
+    open-in-view: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+  jackson:
+    time-zone: Asia/Seoul
+    serialization:
+      write-dates-as-timestamps: false
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+logging:
+  level:
+    root: info
+    org.hibernate.SQL: debug
+
+jwt:
+  secret: ${JWT_SECRET:chilink-local-secret}
+  access-token-expiration: 1800000
+  refresh-token-expiration: 1209600000
+
+rsa:
+  public-key-path: classpath:keys/public.pem
+  private-key-path: classpath:keys/private.pem
+
+netty:
+  chat:
+    port: 9090
+    boss-thread-count: 1
+    worker-thread-count: 4
+
