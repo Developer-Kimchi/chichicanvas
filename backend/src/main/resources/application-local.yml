@@ -7,4 +7,4 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate   # update 안 씀
+      ddl-auto: validate # update 안 씀
