@@ -5,8 +5,10 @@ import com.example.backend.dto.user.SignupRequest;
 import com.example.backend.dto.user.TokenDTO;
 import com.example.backend.service.UserService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +36,28 @@ public class UserController {
     @PostMapping("/signup")
     public String signup(@RequestBody SignupRequest signupRequest) {
         return userService.signUp(signupRequest);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<Void> refreshToken(HttpServletRequest request,
+                                             HttpServletResponse response) {
+
+
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return reissue(refreshToken, response);
     }
 
     public ResponseEntity<Void> reissue(@CookieValue("refreshToken") String refreshToken,

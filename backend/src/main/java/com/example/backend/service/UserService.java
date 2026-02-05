@@ -1,6 +1,6 @@
 package com.example.backend.service;
 
-import com.example.backend.security.jwt.JwtProvider;
+import com.example.backend.security.jwt.JwtTokenProvider;
 import com.example.backend.dto.user.TokenDTO;
 import com.example.backend.dto.user.SigninRequest;
 import com.example.backend.dto.user.SignupRequest;
@@ -21,7 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtProvider jwtProvider;
+    private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
 
     // 1. 회원가입
@@ -62,8 +62,8 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호 불일치");
         }
 
-        String accessToken = jwtProvider.createAccessToken(user.getUserId());
-        String refreshToken = jwtProvider.createRefreshToken(user.getUserId());
+        String accessToken = jwtTokenProvider.createAccessToken(user.getUserId());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getUserId());
 
         // refreshToken 해싱
         String refreshTokenHash = DigestUtils.sha256Hex(refreshToken);
@@ -79,9 +79,9 @@ public class UserService {
 
     public String reissue(String refreshToken) {
 
-        jwtProvider.validateToken(refreshToken);
+        jwtTokenProvider.validateToken(refreshToken);
 
-        String userId = jwtProvider.getSubject(refreshToken);
+        String userId = jwtTokenProvider.getSubject(refreshToken);
 
         String savedHash = (String) redisTemplate.opsForValue()
                 .get("RT:" + userId);
@@ -91,9 +91,9 @@ public class UserService {
             throw new SecurityException("RefreshToken 불일치");
         }
 
-        String newAccessToken = jwtProvider.createAccessToken(userId);
+        String newAccessToken = jwtTokenProvider.createAccessToken(userId);
 
-        String newRefreshToken = jwtProvider.createRefreshToken(userId);
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(userId);
 
         redisTemplate.opsForValue().set(
                 "RT:" + userId,

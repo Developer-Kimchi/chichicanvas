@@ -12,16 +12,17 @@ import java.util.Date;
 
 @Slf4j
 @Component
-public class JwtProvider {
+public class JwtTokenProvider {
 
     private final Key key;
     private final long accessTokenExp = 1000L * 60 * 60;
     private final long refreshTokenExp = 1000L * 60 * 60 * 24 * 7;
 
-    public JwtProvider(@Value("${jwt.secret}") String secretKey) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
+    // 엑세스 토큰 발급
     public String createAccessToken(String userId) {
         return Jwts.builder()
                 .setSubject(userId)
@@ -31,6 +32,7 @@ public class JwtProvider {
                 .compact();
     }
 
+    // 리프레시 토큰 발급
     public String createRefreshToken(String userId) {
         return Jwts.builder()
                 .setSubject(userId)
@@ -40,6 +42,7 @@ public class JwtProvider {
                 .compact();
     }
 
+    // 토큰 유효성 검증
     public boolean validateToken(String token) {
 
         try {
