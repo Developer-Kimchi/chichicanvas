@@ -5,6 +5,13 @@ spring:
     username: chilink
     password: chilink
 
+  data:
+    redis:
+      host: localhost      # Redis 서버 주소
+      port: 6379           # Redis 포트
+      password:             # Redis 비밀번호 없으면 비워둠
+      database: 0          # Redis DB 번호
+
   jpa:
     hibernate:
-      ddl-auto: validate # update 안 씀
+      ddl-auto: update # update 안 씀

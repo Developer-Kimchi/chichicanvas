@@ -30,9 +30,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String uri = request.getRequestURI();
 
-        if (uri.equals("**/signin") ||
-        uri.equals("**/signup") ||
-                uri.equals("**/refresh")) {
+        log.info("uri : {}", uri);
+
+        if (uri.equals("/user/signin") ||
+        uri.equals("/user/signup") ||
+                uri.equals("/user/refresh")) {
+            log.info("들어옴!!!!!!!!!!!!!!!!!!!!");
             filterChain.doFilter(request, response);
             return;
         }

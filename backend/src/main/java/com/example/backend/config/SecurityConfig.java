@@ -17,16 +17,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilter(
-            JwtAuthenticationFilter jwtAuthenticationFilter
-    ) {
-        FilterRegistrationBean<JwtAuthenticationFilter> registrationBean =
-                new FilterRegistrationBean<>();
-
-        registrationBean.setFilter(jwtAuthenticationFilter);
-        registrationBean.setOrder(1);
-        registrationBean.addUrlPatterns("/api/**");
-
+    public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilter(JwtAuthenticationFilter jwtFilter) {
+        FilterRegistrationBean<JwtAuthenticationFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(jwtFilter);
+        registrationBean.addUrlPatterns("/*"); // 모든 요청
+        registrationBean.setOrder(1);          // 필터 순서
         return registrationBean;
     }
 

@@ -32,7 +32,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // Security (JWT 중심)
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.security:spring-security-crypto'
 
     // JWT

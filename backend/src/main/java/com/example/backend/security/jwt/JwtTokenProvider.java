@@ -18,8 +18,8 @@ public class JwtTokenProvider {
     private final long accessTokenExp = 1000L * 60 * 60;
     private final long refreshTokenExp = 1000L * 60 * 60 * 24 * 7;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    public JwtTokenProvider() {
+        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
     // 엑세스 토큰 발급
