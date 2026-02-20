@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import {useEffect, useState} from "react";
+import {fetchWithCookie} from "./Client.tsx";
 
 const rooms = [
     { id: 1, title: "🎨 그림 수다방" },
@@ -7,33 +9,54 @@ const rooms = [
 ];
 
 function ChatRoomList() {
+
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+    const [data, setData] = useState(null);
+
+    useEffect(() => {
+        fetchWithCookie(`${BASE_URL}/user/check`).then(res => setData(res));
+    }, []); // [] = 컴포넌트 처음 렌더될 때 한 번만 실행
+
     const navigate = useNavigate();
 
     return (
-        <div style={styles.page}>
-            <h2 style={styles.title}>채팅방 목록</h2>
+        <div style={styles.bg}>
+            <div style={styles.page}>
+                <h2 style={styles.title}>채팅방 목록</h2>
 
-            <div style={styles.grid}>
-                {rooms.map((room) => (
-                    <div
-                        key={room.id}
-                        style={styles.card}
-                        onClick={() => navigate(`/rooms/${room.id}`)}
-                    >
-                        <h3>{room.title}</h3>
-                        <button style={styles.button}>입장하기</button>
-                    </div>
-                ))}
+                <div style={styles.grid}>
+                    {rooms.map((room) => (
+                        <div
+                            key={room.id}
+                            style={styles.card}
+                            onClick={() => navigate(`/rooms/${room.id}`)}
+                        >
+                            <h3>{room.title}</h3>
+                            <button style={styles.button}>입장하기</button>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
 }
 
 const styles = {
+    bg: {
+        position: "fixed",
+        inset: 0,
+        display: "flex",
+        flexDirection: "column" as const,
+        background: "#f1f2f6", // 전체 화면 배경
+    },
     page: {
-        minHeight: "100vh",
+        flex: 1,
+        width: "100%",
+        maxWidth: "1200px",   // 원하면 최대폭 제한 가능
+        margin: "0 auto",
         padding: "40px",
-        background: "#f1f2f6",
+        boxSizing: "border-box",
     },
     title: {
         marginBottom: "24px",
@@ -65,6 +88,5 @@ const styles = {
         cursor: "pointer",
     },
 };
-
 
 export default ChatRoomList;

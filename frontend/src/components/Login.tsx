@@ -2,13 +2,62 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 function Login() {
+
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
     const navigate = useNavigate();
     const [id, setId] = useState("");
     const [pw, setPw] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleLogin = async () => {
+        // 🔒 입력값 검증
+        if (!id.trim()) {
+            alert("아이디를 입력하세요");
+            return;
+        }
+
+        if (!pw.trim()) {
+            alert("비밀번호를 입력하세요");
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const res = await fetch(`${BASE_URL}/user/signin`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include", // 쿠키 기반 인증
+                body: JSON.stringify({
+                    username: id,
+                    password: pw,
+                }),
+            });
+
+            if (!res.ok) {
+                throw new Error("login failed");
+            }
+
+            navigate("/rooms");
+        } catch (e) {
+            alert("아이디 또는 비밀번호가 올바르지 않습니다");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div style={styles.bg}>
-            <div style={styles.card}>
+            <form
+                style={styles.card}
+                onSubmit={(e) => {
+                    e.preventDefault();   // 새로고침 방지
+                    handleLogin();
+                }}
+            >
                 <h1 style={styles.logo}>🎨 Chichi Canvas</h1>
                 <p style={styles.subtitle}>그림으로 대화하세요</p>
 
@@ -29,31 +78,32 @@ function Login() {
 
                 <button
                     style={styles.button}
-                    onClick={() => navigate("/rooms")}
+                    type="submit"   // 중요
+                    disabled={loading}
                 >
-                    로그인
+                    {loading ? "로그인 중..." : "로그인"}
                 </button>
 
-                {/* 회원가입 버튼 */}
                 <button
+                    type="button"   // submit 방지
                     style={styles.subButton}
                     onClick={() => navigate("/signup")}
                 >
                     회원가입
                 </button>
-            </div>
+            </form>
         </div>
     );
 }
 
 const styles = {
     bg: {
-        height: "100vh",
+        position: "fixed",
+        inset: 0,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background:
-            "linear-gradient(135deg, #6c5ce7, #0984e3, #00cec9)",
+        background: "linear-gradient(135deg, #6c5ce7, #0984e3, #00cec9)",
     },
     card: {
         width: "360px",
