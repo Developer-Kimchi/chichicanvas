@@ -23,9 +23,9 @@ public class JwtTokenProvider {
     }
 
     // 엑세스 토큰 발급
-    public String createAccessToken(String userId) {
+    public String createAccessToken(String username) {
         return Jwts.builder()
-                .setSubject(userId)
+                .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + accessTokenExp))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -33,9 +33,9 @@ public class JwtTokenProvider {
     }
 
     // 리프레시 토큰 발급
-    public String createRefreshToken(String userId) {
+    public String createRefreshToken(String username) {
         return Jwts.builder()
-                .setSubject(userId)
+                .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExp))
                 .signWith(key, SignatureAlgorithm.HS256)

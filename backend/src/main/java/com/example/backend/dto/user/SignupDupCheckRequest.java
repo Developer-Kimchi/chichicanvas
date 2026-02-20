@@ -5,9 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SigninRequest {
+public class SignupDupCheckRequest {
 
     private String username;
-    private String password;
+    private String nickname;
 
 }

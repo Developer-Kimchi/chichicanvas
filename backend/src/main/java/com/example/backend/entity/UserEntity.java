@@ -14,13 +14,17 @@ import java.time.LocalDateTime;
 public class UserEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
-    private String userId;
+    private Long userId;
 
-    @Column(name = "USER_PASSWORD", length = 500)
+    @Column(name = "USERNAME", length = 500, unique = true, nullable = false)
+    private String username;
+
+    @Column(name = "USER_PASSWORD", length = 500, nullable = false)
     private String password;
 
-    @Column(name = "USER_NICKNAME", length = 100, unique = true)
+    @Column(name = "USER_NICKNAME", length = 100, unique = true, nullable = false)
     private String userNickname;
 
     @Column(name = "USER_PROFILE_PICTURE", length = 500)
@@ -32,5 +36,12 @@ public class UserEntity {
     @ManyToOne
     @JoinColumn(name = "FI_SEQ")
     private FileInfoEntity fileInfo;
+
+    @PrePersist
+    public void prePersist() {
+        if (userRegdate == null) {
+            userRegdate = LocalDateTime.now();
+        }
+    }
 
 }

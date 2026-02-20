@@ -27,7 +27,7 @@ public class ChatBalloonEntity {
     private ChatRoomEntity chatRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FILE_INFO")
+    @JoinColumn(name = "FI_SEQ")
     private FileInfoEntity fileInfo;
 
 }

@@ -13,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -24,18 +25,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    private static final Set<String> WHITE_LIST = Set.of(
+            "/user/signin",
+            "/user/signup",
+            "/user/refresh",
+            "/user/checkUserId",
+            "/user/checkNickname"
+    );
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String uri = request.getRequestURI();
 
-        log.info("uri : {}", uri);
+        log.info("JwtAuthenticationFilter uri ==================================== : [{}]", uri);
 
-        if (uri.equals("/user/signin") ||
-        uri.equals("/user/signup") ||
-                uri.equals("/user/refresh")) {
-            log.info("들어옴!!!!!!!!!!!!!!!!!!!!");
+
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            log.info("JwtAuthenticationFilter OPTION check ===================================== ");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (WHITE_LIST.contains(uri)) {
+            log.info("JwtAuthenticationFilter white list check ===================================== ");
             filterChain.doFilter(request, response);
             return;
         }
@@ -46,6 +59,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (accessToken != null) {
 
+                log.info("JwtAuthenticationFilter token check ===================================== ");
+
                 // 1. 토큰 유효성 검증
                 if (!jwtTokenProvider.validateToken(accessToken)) {
                     sendError(response, HttpStatus.UNAUTHORIZED, "INVALID_TOKEN", "유효하지 않은 토큰입니다.");
@@ -53,6 +68,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // 2. userId 추출
                 String userId = jwtTokenProvider.getSubject(accessToken);
+
+                log.info("JwtAuthenticationFilter userId ===================================== : {}", userId);
 
                 // 3. request에 저장
                 request.setAttribute("userId", userId);
