@@ -1,8 +1,11 @@
 package com.example.backend.security.jwt;
 
+import com.example.backend.dto.user.UserDTO;
+import com.example.backend.entity.UserEntity;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -23,9 +26,10 @@ public class JwtTokenProvider {
     }
 
     // 엑세스 토큰 발급
-    public String createAccessToken(String username) {
+    public String createAccessToken(UserEntity user) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(user.getUsername())
+                .claim("nickname",user.getUserNickname())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + accessTokenExp))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -69,6 +73,7 @@ public class JwtTokenProvider {
     }
 
     public String getSubject(String token) {
+
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
@@ -76,6 +81,22 @@ public class JwtTokenProvider {
                 .getBody();
 
         return claims.getSubject();
+    }
+
+    public UserDTO getUserPayload(String token) {
+
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        UserDTO userDTO = UserDTO.builder()
+                .username(claims.getSubject())
+                .userNickname(claims.get("nickname").toString())
+                .build();
+
+        return userDTO;
     }
 
 }

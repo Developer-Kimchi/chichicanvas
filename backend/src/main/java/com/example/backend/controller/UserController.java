@@ -7,9 +7,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 @Slf4j
 @RestController
@@ -18,13 +22,17 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
 
+    @Value("${app.cookie.secure}")
+    private boolean isProd;
+
     private final UserService userService;
 
-    @GetMapping("/check")
-    public ResponseEntity<Void> check() {
-        return ResponseEntity.ok().build();
+    // 토큰 유효성 여부 체크용 경로
+    @GetMapping("/me")
+    public UserDTO me(@CookieValue("accessToken") String accessToken) {
+        UserDTO userDTO = userService.me(accessToken);
+        return userDTO;
     }
-
 
     // 로그인
     @PostMapping("/signin")
@@ -32,7 +40,7 @@ public class UserController {
                                        HttpServletResponse response) {
         log.info("UserController signin ===============================");
 
-        TokenDTO tokenDTO = userService.signIn(signinRequest);
+        TokenDTO tokenDTO = userService.signin(signinRequest);
 
         addCookie(response, "accessToken", tokenDTO.getAccessToken(), 60 * 60);
         addCookie(response, "refreshToken", tokenDTO.getRefreshToken(), 60 * 60 * 24 * 14);
@@ -44,7 +52,7 @@ public class UserController {
     @PostMapping("/signup")
     public boolean signup(@RequestBody SignupRequest signupRequest) {
         log.info("UserController signup ===============================");
-        return userService.signUp(signupRequest);
+        return userService.signup(signupRequest);
     }
 
     // 아이디 중복여부 체크
@@ -82,6 +90,18 @@ public class UserController {
         return reissue(refreshToken, response);
     }
 
+    @PostMapping("/signout")
+    public ResponseEntity<String> signout( @CookieValue(value = "refreshToken") String refreshToken, HttpServletResponse response) {
+        log.info("UserController signOut ===============================");
+        if (refreshToken == null) {
+            return ResponseEntity.badRequest().body("로그아웃 완료");
+        }
+
+        userService.signout(refreshToken, response);
+
+        return ResponseEntity.ok("로그아웃 완료");
+    }
+
     public ResponseEntity<Void> reissue(@CookieValue("refreshToken") String refreshToken,
                                         HttpServletResponse response) {
 
@@ -96,14 +116,15 @@ public class UserController {
     private void addCookie(HttpServletResponse response,
                            String name, String value, int maxAge) {
 
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(maxAge);
+        ResponseCookie cookie = ResponseCookie.from(name, value)
+                .httpOnly(true)
+                .secure(false)  // 운영에서는 true로
+                .path("/")
+                .maxAge(maxAge)
+                .sameSite("Strict")
+                .build();
 
-        response.addCookie(cookie);
-
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
 }

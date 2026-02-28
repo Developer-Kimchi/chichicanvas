@@ -4,6 +4,7 @@ import com.example.backend.global.ErrorResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Set;
 
 @Slf4j
@@ -69,8 +71,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 2. userId 추출
                 String userId = jwtTokenProvider.getSubject(accessToken);
 
-                log.info("JwtAuthenticationFilter userId ===================================== : {}", userId);
-
                 // 3. request에 저장
                 request.setAttribute("userId", userId);
 
@@ -87,11 +87,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String resolveToken(HttpServletRequest request) {
-        String bearer = request.getHeader("Authorization");
-        if(bearer != null && bearer.startsWith("Bearer ")) {
-            return bearer.substring(7);
-        }
-        return null;
+        if (request.getCookies() == null) return null;
+        return Arrays.stream(request.getCookies())
+                .filter(c -> c.getName().equals("accessToken"))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
     private void sendError(HttpServletResponse response,

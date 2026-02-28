@@ -20,3 +20,7 @@ logging:
   file:
     name: C:/logs/chichi_canvas.log
 
+app:
+  cookie:
+    secure: false
+
