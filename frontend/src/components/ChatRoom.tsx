@@ -1,5 +1,6 @@
-import { useState } from "react";
+import {useState} from "react";
 import Canvas from "./Canvas";
+import UserBar from "./UserBar.tsx";
 
 /**
  * 메시지 타입
@@ -13,6 +14,9 @@ interface Message {
 }
 
 function ChatRoom() {
+
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
 
@@ -49,6 +53,7 @@ function ChatRoom() {
 
     return (
         <div style={styles.container}>
+            <UserBar />
             {/* ================= 채팅 영역 ================= */}
             <div style={styles.chatArea}>
                 <div style={styles.messages}>
@@ -58,7 +63,7 @@ function ChatRoom() {
                                 <div style={styles.otherMessageRow}>
                                     {/* 프로필 이미지 */}
                                     <img
-                                        src={msg.profileImage}
+                                        src={msg.profileImage ?? "https://i.imgur.com/2yaf2wb.png"}
                                         alt="profile"
                                         style={styles.profileImage}
                                     />

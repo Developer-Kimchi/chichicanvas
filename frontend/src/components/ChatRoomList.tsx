@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import {useEffect, useState} from "react";
-import {fetchWithCookie} from "./Client.tsx";
+import UserBar from "./UserBar.tsx";
 
 const rooms = [
     { id: 1, title: "🎨 그림 수다방" },
@@ -9,21 +8,19 @@ const rooms = [
 ];
 
 function ChatRoomList() {
-
-    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-    const [data, setData] = useState(null);
-
-    useEffect(() => {
-        fetchWithCookie(`${BASE_URL}/user/check`).then(res => setData(res));
-    }, []); // [] = 컴포넌트 처음 렌더될 때 한 번만 실행
-
     const navigate = useNavigate();
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     return (
         <div style={styles.bg}>
+            <UserBar />
             <div style={styles.page}>
-                <h2 style={styles.title}>채팅방 목록</h2>
+                <div style={styles.header}>
+                    <h2 style={styles.title}>채팅방 목록</h2>
+                    <button style={styles.createButton} onClick={() => navigate("/rooms/create")}>
+                        + 채팅방 만들기
+                    </button>
+                </div>
 
                 <div style={styles.grid}>
                     {rooms.map((room) => (
@@ -48,18 +45,34 @@ const styles = {
         inset: 0,
         display: "flex",
         flexDirection: "column" as const,
-        background: "#f1f2f6", // 전체 화면 배경
+        background: "#f1f2f6",
     },
     page: {
         flex: 1,
         width: "100%",
-        maxWidth: "1200px",   // 원하면 최대폭 제한 가능
+        maxWidth: "1200px",
         margin: "0 auto",
         padding: "40px",
-        boxSizing: "border-box",
+        boxSizing: "border-box" as const,
+    },
+    header: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: "24px",
     },
     title: {
-        marginBottom: "24px",
+        margin: 0,
+    },
+    createButton: {
+        padding: "10px 20px",
+        borderRadius: "8px",
+        border: "none",
+        background: "#00b894",
+        color: "#fff",
+        fontWeight: "bold" as const,
+        cursor: "pointer",
+        fontSize: "14px",
     },
     grid: {
         display: "grid",

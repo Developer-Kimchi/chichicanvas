@@ -4,6 +4,8 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import ChatRoomList from "./components/ChatRoomList";
 import ChatRoom from "./components/ChatRoom";
+import RequireAuth from "./components/RequireAuth";
+import CreateChatRoom from "./components/CreateChatRoom";
 
 function App() {
     return (
@@ -12,8 +14,11 @@ function App() {
                 <Route path="/" element={<Navigate to="/login" />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
-                <Route path="/rooms" element={<ChatRoomList />} />
-                <Route path="/rooms/:id" element={<ChatRoom />} />
+                <Route element={<RequireAuth />}>
+                    <Route path="/rooms" element={<ChatRoomList />} />
+                    <Route path="/rooms/create" element={<CreateChatRoom />} />
+                    <Route path="/rooms/:id" element={<ChatRoom />} />
+                </Route>
             </Routes>
         </BrowserRouter>
     );
